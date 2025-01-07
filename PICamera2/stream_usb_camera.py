@@ -4,9 +4,16 @@ import cv2
 
 app = Flask(__name__)
 
+# Initialize the camera
 camera = Picamera2()
 camera.configure(camera.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))
 camera.start()
+
+# Further zoom-out by defining a larger ROI
+# The coordinates are (x, y, width, height)
+# Adjusting width and height to zoom out more
+roi = (0, 0, 1920, 1080)  # Increase the width and height to zoom out further
+camera.set_controls({"ScalerCrop": roi})
 
 def generate_frames():
     while True:
