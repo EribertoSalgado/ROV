@@ -2,9 +2,6 @@ import subprocess
 from picamera import PiCamera
 from time import sleep
 
-## Author: Mahmood Mustafa Youssef Shilleh
-## DONATE AT: https://buymeacoffee.com/mmshilleh
-
 RESOLUTION = (640, 480)  # Can be adjusted based on your needs
 FRAMERATE = 24           # Adjust this based on your camera's capabilities
 
