@@ -1,3 +1,6 @@
+# flask might be able to be removed.
+# Livestream the CSI camera on a network for several local devices to stream. It is slow, but it
+# may be best to use a local IP address to minimize delay. 
 from flask import Flask, Response
 from picamera2 import Picamera2
 import cv2
