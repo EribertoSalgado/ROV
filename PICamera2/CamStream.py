@@ -3,6 +3,7 @@
 # may be best to use a local IP address to minimize delay. 
 # http://10.0.0.116/CamDash.php the file is located in /var/www/html
 # http://10.0.0.116:5000/video_feed
+# run using: python3 <fileName>
 from flask import Flask, Response
 from picamera2 import Picamera2
 import cv2
