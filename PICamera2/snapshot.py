@@ -8,4 +8,3 @@ cam.start()
 cam.capture_file("helloworld4.jpg")
 print("Image Captured")
 cam.stop()
-salgadoe@ra
