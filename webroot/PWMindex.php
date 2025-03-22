@@ -18,7 +18,19 @@ $depth = isset($data['depth']) ? $data['depth'] : "Error";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROV Control Panel</title>
+    <!-- Title of the tab!-->
+    <title>ROV Dashboard</title> 
+
+    <!-- Title -->
+    <style> 
+        h1 {
+            text-align: center;
+        }
+        body {
+            background-color: purple;
+        }
+    </style>
+
     <script>
         function takeSnapshot() {
             var img = document.getElementById("snapshot");
@@ -39,7 +51,8 @@ $depth = isset($data['depth']) ? $data['depth'] : "Error";
     </script>
 </head>
 <body>
-    <h1>ROV Control Panel</h1>
+    <!-- Title -->
+    <h1>ROV Senior Design Spring 2025</h1>
 
     <!-- Video Feed Section -->
     <h2>ROV Video Stream</h2>
