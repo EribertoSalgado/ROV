@@ -31,14 +31,20 @@ def video_feed():
 def snapshot():
     # Capture a snapshot
     frame = camera.capture_array()
+    
+    # Encode as JPEG
     ret, buffer = cv2.imencode('.jpg', frame)
     img_bytes = buffer.tobytes()
 
-    # Convert the byte data to a file-like object
-    img_io = io.BytesIO(img_bytes)
-    img_io.seek(0)
+    # Define the file path
+    image_path = "/var/www/html/Gallery/snapshot.jpg"  # Change to your desired directory
 
-    return send_file(img_io, mimetype='image/jpeg')
+    # Save the image to the Raspberry Pi
+    with open(image_path, "wb") as f:
+        f.write(img_bytes)
+
+    # Return the saved image
+    return send_file(image_path, mimetype='image/jpeg')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
