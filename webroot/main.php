@@ -11,6 +11,7 @@ $data = json_decode($output, true);
 
 $temperature = isset($data['temperature']) ? $data['temperature'] : "Error";
 $depth = isset($data['depth']) ? $data['depth'] : "Error";
+$pressure = isset($data['pressure']) ? $data['pressure'] : "Error";
 
 // Get the most recent snapshot
 $latestImage = '';
@@ -55,11 +56,12 @@ if (!empty($images)) {
                 .then(data => {
                     document.getElementById("temperature").innerText = data.temperature + " °C";
                     document.getElementById("depth").innerText = data.depth + " m";
+                    document.getElementById("pressure").innerText = data.pressure + " mbar";
                 })
                 .catch(error => console.error("Error fetching sensor data:", error));
         }
 
-        setInterval(updateSensorData, 5000); // Update every 5 seconds
+        setInterval(updateSensorData, 30000); // Update every 5 seconds
     </script>
 </head>
 <body>
@@ -77,6 +79,8 @@ if (!empty($images)) {
         <h2>Sensor Readings</h2>
         <p><strong>Temperature:</strong> <span id="temperature"><?php echo htmlspecialchars($temperature); ?> °C</span></p>
         <p><strong>Depth:</strong> <span id="depth"><?php echo htmlspecialchars($depth); ?> m</span></p>
+        <p><strong>Pressure:</strong> <span id="pressure"><?php echo htmlspecialchars($pressure); ?> mbar</span></p>
+
     </div>
 
     <!-- Latest Snapshot Section -->
@@ -103,4 +107,5 @@ if (!empty($images)) {
 
 </body>
 </html>
+
 
