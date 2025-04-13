@@ -29,11 +29,22 @@ last_command = None
 def send_command(cmd):
     global last_command
     if cmd != last_command:
-        ssh.exec_command("pkill -f forward.py; pkill -f backward.py; pkill -f left.py; pkill -f right.py; pkill -f dive.py; pkill -f surface.py; pkill -f stop.py")
-        time.sleep(1)
-        ssh.exec_command(f"python3 /var/www/html/{cmd}.py")
-        last_command = cmd
-        print(f"Sent command: {cmd}")
+        try:
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect(pi_ip, username=pi_user, password=pi_pass)
+
+            # Kill all other scripts first
+            ssh.exec_command("pkill -f forward.py; pkill -f backward.py; pkill -f left.py; pkill -f right.py; pkill -f dive.py; pkill -f surface.py; pkill -f stop.py")
+            time.sleep(0.3)
+            ssh.exec_command(f"python3 /var/www/html/{cmd}.py")
+
+            ssh.close()
+            last_command = cmd
+            print(f"Sent command: {cmd}")
+
+        except Exception as e:
+            print(f"SSH command failed: {e}")
 
 try:
     while True:
@@ -72,4 +83,5 @@ except KeyboardInterrupt:
     print("Exiting...")
     ssh.close()
     pygame.quit()
+
 
