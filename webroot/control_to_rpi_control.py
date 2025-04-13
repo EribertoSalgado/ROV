@@ -1,4 +1,3 @@
-# windows ssh script
 import pygame
 import paramiko
 import time
@@ -8,52 +7,64 @@ pi_ip = '10.0.0.116'
 pi_user = 'salgadoe'
 pi_pass = 'Jumping@Turtles6211'
 
-# Connect to RPi over SSH
+# Setup SSH connection
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 ssh.connect(pi_ip, username=pi_user, password=pi_pass)
 
-# Setup pygame and controller
+# Setup controller
 pygame.init()
 pygame.joystick.init()
 
 if pygame.joystick.get_count() == 0:
-    raise Exception("No PS5 controller detected. Connect via USB or Bluetooth.")
+    raise Exception("No controller detected.")
 
 joystick = pygame.joystick.Joystick(0)
 joystick.init()
-
 print(f"Controller connected: {joystick.get_name()}")
 
-DEADZONE = 0.1
+DEADZONE = 0.2
+last_command = None
 
 def send_command(cmd):
-    ssh.exec_command(cmd)
+    global last_command
+    if cmd != last_command:
+        ssh.exec_command("pkill -f forward.py; pkill -f backward.py; pkill -f left.py; pkill -f right.py; pkill -f dive.py; pkill -f surface.py; pkill -f stop.py")
+        time.sleep(1)
+        ssh.exec_command(f"python3 /var/www/html/{cmd}.py")
+        last_command = cmd
+        print(f"Sent command: {cmd}")
 
 try:
     while True:
         pygame.event.pump()
-        y_axis = -joystick.get_axis(1)
 
-        if abs(y_axis) < DEADZONE:
-            y_axis = 0
+        # LEFT Stick Y-axis → up/down
+        left_y = -joystick.get_axis(1)
 
-        if y_axis > 0.5:
-            print("Forward")
-            send_command("python3 /var/www/html/forward.py")
-        elif y_axis < -0.5:
-            print("Backward")
-            send_command("python3 /var/www/html/backward.py")
+        # RIGHT Stick Y (up/down) and X (left/right)
+        right_y = -joystick.get_axis(3)
+        right_x = joystick.get_axis(2)
+
+        # Z-axis: Up/Down control (dive/surface)
+        if abs(left_y) > DEADZONE:
+            if left_y > 0:
+                send_command("dive")
+            else:
+                send_command("surface")
+
+        # Y-axis: Forward or turn
+        elif abs(right_y) > DEADZONE:
+            if right_y > 0:
+                send_command("forward")
+        elif abs(right_x) > DEADZONE:
+            if right_x > 0:
+                send_command("turn_right")
+            else:
+                send_command("turn_left")
+
         else:
-            print("Stop")
-            send_command("python3 /var/www/html/stop.py")
-
-        # Optional: update watchdog heartbeat
-        try:
-            with open("heartbeat.txt", "w") as hb:
-                hb.write(str(time.time()))
-        except:
-            pass  # skip if fails (e.g., permissions issue)
+            send_command("stop")
 
         time.sleep(0.2)
 
@@ -61,3 +72,4 @@ except KeyboardInterrupt:
     print("Exiting...")
     ssh.close()
     pygame.quit()
+
