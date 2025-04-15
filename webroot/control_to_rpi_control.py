@@ -3,9 +3,9 @@ import paramiko
 import time
 
 # Raspberry Pi SSH Info
-pi_ip = '10.0.0.116'
-pi_user = 'salgadoe'
-pi_pass = 'Jumping@Turtles6211'
+pi_ip = ''
+pi_user = ''
+pi_pass = ''
 
 # Setup SSH connection
 ssh = paramiko.SSHClient()
