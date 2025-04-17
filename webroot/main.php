@@ -4,7 +4,7 @@ if (isset($_POST['command'])) {
     file_put_contents("/var/www/html/motor_command.txt", $_POST['command']);
 }
 
-// Fetch sensor data using Python script
+// Fetch sensor data
 $pythonScript = escapeshellcmd('python3 /var/www/html/tempsensor.py');
 $output = shell_exec($pythonScript);
 $data = json_decode($output, true);
@@ -12,15 +12,16 @@ $data = json_decode($output, true);
 $temperature = isset($data['temperature']) ? $data['temperature'] : "Error";
 $depth = isset($data['depth']) ? $data['depth'] : "Error";
 $pressure = isset($data['pressure']) ? $data['pressure'] : "Error";
+$timestamp = isset($data['timestamp']) ? $data['timestamp'] : "N/A";
 
-// Get the most recent snapshot
+// Get the latest image
 $latestImage = '';
 $galleryDir = '/var/www/html/Gallery';
 $images = glob($galleryDir . "/*.jpg");
 
 if (!empty($images)) {
-    rsort($images); // Sort by newest first
-    $latestImage = basename($images[0]); // Just the file name
+    rsort($images);
+    $latestImage = basename($images[0]);
 }
 ?>
 
@@ -29,9 +30,9 @@ if (!empty($images)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROV Dashboard</title> 
+    <title>ROV Dashboard</title>
 
-    <style> 
+    <style>
         h1 {
             text-align: center;
         }
@@ -57,11 +58,12 @@ if (!empty($images)) {
                     document.getElementById("temperature").innerText = data.temperature + " °C";
                     document.getElementById("depth").innerText = data.depth + " m";
                     document.getElementById("pressure").innerText = data.pressure + " mbar";
+                    document.getElementById("timestamp").innerText = data.timestamp;
                 })
                 .catch(error => console.error("Error fetching sensor data:", error));
         }
 
-        setInterval(updateSensorData, 30000); // Update every 5 seconds
+        setInterval(updateSensorData, 30000); // Refresh every 30 sec
     </script>
 </head>
 <body>
@@ -80,10 +82,10 @@ if (!empty($images)) {
         <p><strong>Temperature:</strong> <span id="temperature"><?php echo htmlspecialchars($temperature); ?> °C</span></p>
         <p><strong>Depth:</strong> <span id="depth"><?php echo htmlspecialchars($depth); ?> m</span></p>
         <p><strong>Pressure:</strong> <span id="pressure"><?php echo htmlspecialchars($pressure); ?> mbar</span></p>
-
+        <p><strong>Last Updated:</strong> <span id="timestamp"><?php echo htmlspecialchars($timestamp); ?></span></p>
     </div>
 
-    <!-- Latest Snapshot Section -->
+    <!-- Snapshot Section -->
     <div class="section">
         <h2>Latest Snapshot</h2>
         <?php if ($latestImage): ?>
@@ -107,5 +109,3 @@ if (!empty($images)) {
 
 </body>
 </html>
-
-
