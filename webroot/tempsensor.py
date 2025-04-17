@@ -26,11 +26,14 @@ pressure_mbar = sensor.pressure()  # Default is mbar
 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 # Output JSON for PHP or other web backend
+# Output JSON for PHP or other web backend
 data = {
     "temperature": round(temperature_c, 2),
     "depth": round(depth_m, 3),
-    "pressure": round(pressure_mbar, 1)
+    "pressure": round(pressure_mbar, 1),
+    "timestamp": timestamp
 }
+
 
 print(json.dumps(data))
 
