@@ -99,13 +99,5 @@ if (!empty($images)) {
         </div>
     </div>
 
-    <!-- Motor Control Section -->
-    <div class="section">
-        <h2>Motor Control</h2>
-        <form method="post">
-            <button name="command" value="Q">Stop</button>
-        </form>
-    </div>
-
 </body>
 </html>
