@@ -1,9 +1,4 @@
 <?php
-// Handle motor commands
-if (isset($_POST['command'])) {
-    file_put_contents("/var/www/html/motor_command.txt", $_POST['command']);
-}
-
 // Fetch sensor data
 $pythonScript = escapeshellcmd('python3 /var/www/html/tempsensor.py');
 $output = shell_exec($pythonScript);
