@@ -3,9 +3,9 @@ import paramiko
 import time
 
 # Raspberry Pi SSH Info
-pi_ip = ''
-pi_user = ''
-pi_pass = ''
+pi_ip = '10.0.0.116'
+pi_user = 'salgadoe'
+pi_pass = 'Jumping@Turtles6211'
 
 # Setup SSH connection
 ssh = paramiko.SSHClient()
@@ -25,6 +25,7 @@ print(f"Controller connected: {joystick.get_name()}")
 
 DEADZONE = 0.2
 last_command = None
+last_snapshot_time = 0
 
 def send_command(cmd):
     global last_command
@@ -50,21 +51,25 @@ try:
     while True:
         pygame.event.pump()
 
+        # Trigger snapshot on X button (button 0)
+        if joystick.get_button(0):
+            current_time = time.time()
+            if current_time - last_snapshot_time > 0.5:  # debounce
+                send_command("snapshot")
+                last_snapshot_time = current_time
+
         # LEFT Stick Y-axis → up/down
         left_y = -joystick.get_axis(1)
 
-        # RIGHT Stick Y (up/down) and X (left/right)
+        # RIGHT Stick Y and X
         right_y = -joystick.get_axis(3)
         right_x = joystick.get_axis(2)
 
-        # Z-axis: Up/Down control (dive/surface)
         if abs(left_y) > DEADZONE:
             if left_y > 0:
                 send_command("dive")
             else:
                 send_command("surface")
-
-        # Y-axis: Forward or turn
         elif abs(right_y) > DEADZONE:
             if right_y > 0:
                 send_command("forward")
@@ -73,7 +78,6 @@ try:
                 send_command("turn_right")
             else:
                 send_command("turn_left")
-
         else:
             send_command("stop")
 
@@ -83,5 +87,4 @@ except KeyboardInterrupt:
     print("Exiting...")
     ssh.close()
     pygame.quit()
-
 
