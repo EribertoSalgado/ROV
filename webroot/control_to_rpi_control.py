@@ -57,7 +57,14 @@ try:
             if current_time - last_snapshot_time > 0.5:  # debounce
                 send_command("snapshot")
                 last_snapshot_time = current_time
-
+                
+        # O button (button 1) turns LED ON
+        if joystick.get_button(1):
+            current_time = time.time()
+            if current_time - last_led_time > 0.5:  # debounce
+                send_command("LEDON")
+                last_led_time = current_time
+                
         # LEFT Stick Y-axis → up/down
         left_y = -joystick.get_axis(1)
 
